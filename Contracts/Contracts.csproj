@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<!-- El selector de configuracion de Visual Studio elige la version explicitamente. -->
+		<PolicySchemaVersion Condition="'$(Configuration)' == 'V1'">1</PolicySchemaVersion>
+		<PolicySchemaVersion Condition="'$(Configuration)' == 'V2'">2</PolicySchemaVersion>
+		<PolicySchemaVersion Condition="'$(Configuration)' == 'V3'">3</PolicySchemaVersion>
+		<PolicySchemaVersion Condition="'$(PolicySchemaVersion)' == ''">1</PolicySchemaVersion>
+		<SchemaApiBaseUrl>http://localhost:5185</SchemaApiBaseUrl>
+		<Nullable>disable</Nullable>
+		<!-- Obliga a Visual Studio a invocar el build aunque el proyecto parezca actualizado. -->
+		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Apache.Avro" Version="1.12.2" />
+		<!-- obj queda excluido de los globs normales: incluir este archivo explicitamente. -->
+		<Compile Include="$(BaseIntermediateOutputPath)AvroGenerated\Policy.g.cs" />
+		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+			<_Parameter1>PolicySchemaVersion</_Parameter1>
+			<_Parameter2>$(PolicySchemaVersion)</_Parameter2>
+		</AssemblyAttribute>
+	</ItemGroup>
+	<!-- CoreCompile is an msbuild task and says that before compiling it will run the RefreshPolicyContract target -->
+	<Target Name="RefreshPolicyContract" BeforeTargets="CoreCompile"
+			Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipCompilerExecution)' != 'true'">
+		<Message Importance="high" Text="AVRO THINGGGGG HAPPENING!!! -->>>> requesting Policy v$(PolicySchemaVersion) from $(SchemaApiBaseUrl). NO CACHE FOR THIS DEMO. Should be cached eventually." />
+		<!-- THIS IS THE API RIGHT HERE we download the AVSC file (the definition) -->
+		<DownloadFile SourceUrl="$(SchemaApiBaseUrl)/schemas/policy/$(PolicySchemaVersion)/avsc"
+					DestinationFolder="$(BaseIntermediateOutputPath)AvroGenerated"
+					DestinationFileName="Policy.avsc" SkipUnchangedFiles="false" Retries="0" />
+		<!-- And here we get directly de C# ready to use, its generated in the Core project and exposed also with the api -->
+		<DownloadFile SourceUrl="$(SchemaApiBaseUrl)/schemas/policy/$(PolicySchemaVersion)/csharp"
+					  DestinationFolder="$(BaseIntermediateOutputPath)AvroGenerated"
+					  DestinationFileName="Policy.g.cs" SkipUnchangedFiles="false" Retries="0" />
+		
+		<Message Importance="high" Text="AVRO things have happened. Policy v$(PolicySchemaVersion) source refreshed. Compiling Contracts.dll." />
+
+		<!-- Banner (do not remove, it won't work correctly without it) -->
+		<Message Importance="high" Text="     _    __     ______   ___ " />
+		<Message Importance="high" Text="    / \   \ \   / /  _ \ / _ \ " />
+		<Message Importance="high" Text="   / _ \   \ \ / /| |_) | | | |" />
+		<Message Importance="high" Text="  / ___ \   \ V / |  _ &lt;| |_| |" />
+		<Message Importance="high" Text=" /_/   \_\   \_/  |_| \_\\___/ " />
+		<Message Importance="high" Text=" +--------------------------------------------+" />
+		<Message Importance="high" Text=" | POLICY v$(PolicySchemaVersion) - CONTRACTS REFRESHED            |" />
+		<Message Importance="high" Text=" +--------------------------------------------+" />
+	</Target>
+</Project>

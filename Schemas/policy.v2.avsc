@@ -1,0 +1,53 @@
+{
+  "type": "record",
+  "name": "Policy",
+  "namespace": "AvroSpike.Contracts",
+  "doc": "Fictional policy/invoice fixture. Money and ISO dates are strings for this basic generation demo; production logical-type mappings require a separate decision.",
+  "fields": [
+    {
+      "name": "VendorName",
+      "type": "string"
+    },
+    {
+      "name": "CustomerName",
+      "type": "string"
+    },
+    {
+      "name": "InvoiceId",
+      "type": "string"
+    },
+    {
+      "name": "InvoiceDate",
+      "type": "string"
+    },
+    {
+      "name": "InvoiceTotal",
+      "type": "string"
+    },
+    {
+      "name": "VendorAddress",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "VendorTaxId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "CustomerAddress",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "DueDate",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "Currency",
+      "type": "string",
+      "default": ""
+    }
+  ]
+}
