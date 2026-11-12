@@ -3,7 +3,7 @@ using AvroSpike.Core;
 using System.Collections.Concurrent;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-// La API es independiente de Contracts: puede arrancar ANTES de generar los tipos.
+// The API is independent of Contracts: it can start BEFORE generating the types.
 string source = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "Schemas"));
 if (!Directory.Exists(source))
 {
@@ -14,7 +14,7 @@ var catalog = new SchemaCatalog(source);
 var requests = new ConcurrentQueue<object>();
 WebApplication app = builder.Build();
 
-// Registrar las peticiones permite demostrar que CADA build vuelve a consultar.
+// Logging requests demonstrates that EVERY build queries the API again.
 app.Use(async (context, next) =>
 {
     context.Response.Headers.CacheControl = "no-store";

@@ -4,7 +4,7 @@ namespace AvroSpike.Core;
 
 public static class AvroCodec
 {
-    /// <summary>Round trip real de bytes Avro, no una simple copia del objeto.</summary>
+    /// <summary>A real Avro byte round trip, not just an object copy.</summary>
     public static T RoundTrip<T>(T policy) where T : ISpecificRecord, new()
     {
         using var buffer = new MemoryStream();
@@ -12,8 +12,8 @@ public static class AvroCodec
         new SpecificDatumWriter<T>(policy.Schema).Write(policy, encoder);
         encoder.Flush();
         buffer.Position = 0;
-        // En este ejemplo BLL y consola comparten EXACTAMENTE la misma version.
-        // La lectura entre versiones distintas es otro escenario, no se simula aqui.
+        // In this example, BLL and the console share EXACTLY the same version.
+        // Reading across different versions is a separate scenario, not simulated here.
         return new SpecificDatumReader<T>(policy.Schema, new T().Schema)
             .Read(new T(), new BinaryDecoder(buffer));
     }

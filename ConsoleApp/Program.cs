@@ -2,8 +2,8 @@ using System.Reflection;
 using AvroSpike.BLL;
 using AvroSpike.Contracts;
 
-// El mismo programa sirve para v1/v2/v3. La lista cambia porque la clase C#
-// se genero y compilo con distintas propiedades, no por ocultar campos en pantalla.
+// The same program works for v1/v2/v3. The list changes because the C# class
+// was generated and compiled with different properties, not because fields are hidden on screen.
 var version = typeof(Policy).Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
     .Single(a => a.Key == "PolicySchemaVersion").Value!;
 var properties = typeof(Policy).GetProperties(BindingFlags.Public | BindingFlags.Instance)

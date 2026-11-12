@@ -1,53 +1,53 @@
-# AvroSpike - demo de generacion en build (.NET 10)
-## Cinco proyectos
-- Core: lectura/validacion de schemas, generador oficial Apache Avro, round trip binario.
-- SchemaCatalog.Api: fuente central publicada por HTTP. Independiente de Contracts.
-- Contracts: descarga schema Y C# generado en CADA build. Sin cache ni fallback.
-- BLL: GetAll() devuelve Policy del contrato compilado.
-- ConsoleApp: llama BLL y muestra las propiedades reales del tipo generado.
+# AvroSpike - build-time generation demo (.NET 10)
+## Five projects
+- Core: schema reading/validation, official Apache Avro generator, binary round trip.
+- SchemaCatalog.Api: central source exposed over HTTP. Independent of Contracts.
+- Contracts: downloads the schema AND generated C# on EVERY build. No cache or fallback.
+- BLL: GetAll() returns Policy objects from the compiled contract.
+- ConsoleApp: calls BLL and displays the actual properties of the generated type.
 
-## Demo desde Visual Studio
-1. Abrir AvroSpike.sln.
-2. Elegir configuracion Catalog. Set Startup Project = SchemaCatalog.Api.
-3. Ctrl+F5 inicia API en http://localhost:5185. Dejarla abierta.
-4. Volver a Visual Studio. Set Startup Project = ConsoleApp.
-5. Elegir V1 y Ctrl+F5: 2 policies, 5 propiedades cada una.
-6. Cerrar la consola del ejemplo. Elegir V2 y Ctrl+F5: 10 propiedades.
-7. Elegir V3 y Ctrl+F5: 15 propiedades.
-8. Output/Build muestra AVRO requesting...; /build-requests muestra las consultas.
-9. Volver a Build sin cambiar version: consulta la API otra vez.
-10. Si API esta apagada, Contracts debe fallar. Los archivos obj no son cache/fallback.
+## Demo in Visual Studio
+1. Open AvroSpike.sln.
+2. Select the Catalog configuration. Set Startup Project = SchemaCatalog.Api.
+3. Ctrl+F5 starts the API at http://localhost:5185. Leave it running.
+4. Return to Visual Studio. Set Startup Project = ConsoleApp.
+5. Select V1 and press Ctrl+F5: 2 policies, 5 properties each.
+6. Close the demo console. Select V2 and press Ctrl+F5: 10 properties.
+7. Select V3 and press Ctrl+F5: 15 properties.
+8. Output/Build shows AVRO requesting...; /build-requests shows the requests.
+9. Build again without changing the version: it queries the API again.
+10. If the API is stopped, Contracts must fail to build. The obj files are not a cache/fallback.
 
-La configuracion Catalog construye solo Core/API; V1-V3 construyen los consumidores.
-Core se compila en Catalog para que la BLL reutilice esa biblioteca sin reconstruir
-los archivos que usa la API en ejecucion. No hay ciclo ni arranque automatico de API.
+The Catalog configuration builds only Core/API; V1-V3 build the consumers.
+Core is compiled in Catalog so that BLL reuses that library without rebuilding
+the files used by the running API. There is no cycle or automatic API startup.
 
-## Versiones del contrato ficticio
+## Fictional contract versions
 V1: VendorName, CustomerName, InvoiceId, InvoiceDate, InvoiceTotal.
-V2 suma: VendorAddress, VendorTaxId, CustomerAddress, DueDate, Currency.
-V3 suma: PurchaseOrder, SubTotal, TotalTax, AmountDue, PaymentTerms.
-Importes decimales y fechas usan string en esta demo para evitar mappings implicitos
-no validados. Los schemas mantienen fullname AvroSpike.Contracts.Policy.
-Los campos nuevos tienen default vacio para lectura de datos historicos.
+V2 adds: VendorAddress, VendorTaxId, CustomerAddress, DueDate, Currency.
+V3 adds: PurchaseOrder, SubTotal, TotalTax, AmountDue, PaymentTerms.
+Decimal amounts and dates use string in this demo to avoid unvalidated implicit
+mappings. The schemas retain the fullname AvroSpike.Contracts.Policy.
+New fields have an empty default value for reading historical data.
 
-## Precisiones
-La API usa Core/Apache CodeGen para generar C# AL RECIBIR la peticion del build.
-Contracts descarga esa fuente y la compila; no se ejecuta avrogen en el cliente.
-No hay comandos de terminal ni tareas Exec en el build.
-La reflexion en BLL/Console permite una sola implementacion que compila con las
-tres formas del contrato. No oculta campos: Policy tiene realmente 5/10/15 propiedades.
-Cada GetAll tambien serializa/deserializa bytes Avro usando el tipo compilado.
-Los datos son completamente ficticios. No se usan servicios/productos reales del cliente.
+## Clarifications
+The API uses Core/Apache CodeGen to generate C# WHEN IT RECEIVES the build request.
+Contracts downloads that source and compiles it; avrogen does not run on the client.
+There are no terminal commands or Exec tasks in the build.
+Reflection in BLL/Console allows a single implementation to compile with all
+three contract shapes. It does not hide fields: Policy actually has 5/10/15 properties.
+Each GetAll call also serializes/deserializes Avro bytes using the compiled type.
+The data is entirely fictional. No actual customer services/products are used.
 
 ## Setup
-La carpeta Setup es solo el asistente de escritura creado y ejecutado desde Visual Studio.
-No forma parte de los cinco proyectos de AvroSpike.sln ni de la demo.
+The Setup folder contains only the writing assistant created and run from Visual Studio.
+It is not part of the five projects in AvroSpike.sln or the demo.
 
-## Verificacion ejecutada en la VM (12 noviembre 2026)
-- Catalog: Core y API compilaron correctamente; API escucho en localhost:5185.
-- V1: compilo y listo 2 policies con 5 propiedades cada una (PASS).
-- V2: compilo y listo 2 policies con 10 propiedades cada una (PASS).
-- V3: compilo y listo 2 policies con 15 propiedades cada una (PASS).
-- Build repetido V3 sin cambios: se observaron otras dos descargas HTTP (avsc + csharp).
-- API apagada: Build Solution fallo MSB3923, conexion rechazada; no uso archivos previos como fallback.
-- Los cinco proyectos se crean sin depender de Docker, Azure ni un broker.
+## Verification performed on the VM (November 12, 2026)
+- Catalog: Core and API built successfully; the API listened on localhost:5185.
+- V1: built and listed 2 policies with 5 properties each (PASS).
+- V2: built and listed 2 policies with 10 properties each (PASS).
+- V3: built and listed 2 policies with 15 properties each (PASS).
+- Repeated V3 build without changes: two additional HTTP downloads were observed (avsc + csharp).
+- API stopped: Build Solution failed with MSB3923, connection refused; it did not use previous files as a fallback.
+- All five projects are created without depending on Docker, Azure, or a broker.

@@ -7,9 +7,9 @@ namespace AvroSpike.BLL;
 public sealed class PolicyService
 {
     /// <summary>
-    /// Devuelve objetos Policy FUERTEMENTE TIPADOS de la version compilada.
-    /// Los datos ficticios contienen el superset v3. Se copian solo los campos
-    /// que existen realmente en la clase generada, sin recompilar codigo de negocio.
+    /// Returns STRONGLY TYPED Policy objects from the compiled version.
+    /// The fictional data contains the v3 superset. Only fields that actually
+    /// exist in the generated class are copied, without recompiling business logic.
     /// </summary>
     public IReadOnlyList<Policy> GetAll()
     {
@@ -19,11 +19,11 @@ public sealed class PolicyService
             var policy = new Policy();
             foreach (var field in schema.Fields)
             {
-                // La reflexion evita referencias a propiedades que todavia no existen en v1.
-                // Esto es una tecnica para los datos de LA DEMO, no una regla de negocio.
+                // Reflection avoids references to properties that do not yet exist in v1.
+                // This is a technique for THE DEMO data, not a business rule.
                 typeof(Policy).GetProperty(field.Name)!.SetValue(policy, row[field.Name]);
             }
-            return AvroCodec.RoundTrip(policy); // Verifica el contrato con bytes Avro reales.
+            return AvroCodec.RoundTrip(policy); // Verifies the contract using real Avro bytes.
         }).ToArray();
     }
 

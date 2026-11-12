@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<!-- El selector de configuracion de Visual Studio elige la version explicitamente. -->
+		<!-- The Visual Studio configuration selector explicitly selects the version. -->
 		<PolicySchemaVersion Condition="'$(Configuration)' == 'V1'">1</PolicySchemaVersion>
 		<PolicySchemaVersion Condition="'$(Configuration)' == 'V2'">2</PolicySchemaVersion>
 		<PolicySchemaVersion Condition="'$(Configuration)' == 'V3'">3</PolicySchemaVersion>
 		<PolicySchemaVersion Condition="'$(PolicySchemaVersion)' == ''">1</PolicySchemaVersion>
 		<SchemaApiBaseUrl>http://localhost:5185</SchemaApiBaseUrl>
 		<Nullable>disable</Nullable>
-		<!-- Obliga a Visual Studio a invocar el build aunque el proyecto parezca actualizado. -->
+		<!-- Forces Visual Studio to invoke the build even if the project appears up to date. -->
 		<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Apache.Avro" Version="1.12.2" />
-		<!-- obj queda excluido de los globs normales: incluir este archivo explicitamente. -->
+		<!-- obj is excluded from the normal globs: include this file explicitly. -->
 		<Compile Include="$(BaseIntermediateOutputPath)AvroGenerated\Policy.g.cs" />
 		<AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
 			<_Parameter1>PolicySchemaVersion</_Parameter1>
@@ -27,7 +27,7 @@
 		<DownloadFile SourceUrl="$(SchemaApiBaseUrl)/schemas/policy/$(PolicySchemaVersion)/avsc"
 					DestinationFolder="$(BaseIntermediateOutputPath)AvroGenerated"
 					DestinationFileName="Policy.avsc" SkipUnchangedFiles="false" Retries="0" />
-		<!-- And here we get directly de C# ready to use, its generated in the Core project and exposed also with the api -->
+		<!-- Here we download ready-to-use C# directly; it is generated in the Core project and also exposed through the API. -->
 		<DownloadFile SourceUrl="$(SchemaApiBaseUrl)/schemas/policy/$(PolicySchemaVersion)/csharp"
 					  DestinationFolder="$(BaseIntermediateOutputPath)AvroGenerated"
 					  DestinationFileName="Policy.g.cs" SkipUnchangedFiles="false" Retries="0" />
